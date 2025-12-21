@@ -30,7 +30,6 @@ export function useTimer(opts: UseTimerOpts = {}) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running]);
 
   useEffect(() => {
@@ -58,7 +57,6 @@ export function useTimer(opts: UseTimerOpts = {}) {
     setElapsed(0);
     lastStartRef.current = null;
   }
-  // for manual server sync
   function sync(setSeconds: number) {
     setElapsed(setSeconds);
   }

@@ -1,14 +1,12 @@
-import React from "react";
-
 export default function RowCounter({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   return (
-    <div style={{ marginTop: 8 }}>
+    <div className="counter" role="group" aria-label="Row counter">
       <h4>Rows</h4>
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <button onClick={() => onChange(Math.max(0, value - 1))}>-</button>
-        <div style={{ minWidth: 80, textAlign: "center" }}>{value}</div>
-        <button onClick={() => onChange(value + 1)}>+</button>
-        <button onClick={() => onChange(0)}>Reset</button>
+      <div className="counter-controls">
+        <button className="btn-ctrl" aria-label="Decrease rows" onClick={() => onChange(Math.max(0, value - 1))}>-</button>
+        <div className="counter-value" aria-live="polite">{value}</div>
+        <button className="btn-ctrl" aria-label="Increase rows" onClick={() => onChange(value + 1)}>+</button>
+        <button className="btn-ctrl reset" aria-label="Reset rows" onClick={() => onChange(0)}>Reset</button>
       </div>
     </div>
   );

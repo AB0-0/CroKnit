@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router-dom";
 import App from "./app/App";
 import { AuthProvider } from "./features/auth/AuthProvider";
+import { ToastProvider } from "./app/ToastProvider";
 import "./index.css";
 
 const root = document.getElementById("root");
@@ -15,7 +16,9 @@ ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <AuthProvider>
       <HashRouter>
-        <App />
+        <ToastProvider>
+          <App />
+        </ToastProvider>
       </HashRouter>
     </AuthProvider>
   </React.StrictMode>
