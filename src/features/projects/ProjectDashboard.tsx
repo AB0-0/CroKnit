@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../auth/AuthProvider";
-import { fetchProject, updateProjectCounters } from "./api";
+import { fetchProject, updateProjectCounters } from "../api";
 import RowCounter from "../counters/RowCounter";
 import StitchCounter from "../counters/StitchCounter";
 import { useTimer } from "../../hooks/userTimer";
@@ -10,7 +9,6 @@ import ProjectInventory from "./ProjectInventory";
 
 export default function ProjectDashboard() {
   const { id } = useParams();
-  const { user } = useAuth();
   const [project, setProject] = useState<any | null>(null);
 
   // load project
@@ -24,7 +22,7 @@ export default function ProjectDashboard() {
 
   // Timer: initialize with project total_time_seconds
   const initialSeconds = project?.total_time_seconds ?? 0;
-  const { elapsed, running, start, pause, reset, sync } = useTimer({
+  const { elapsed, running, start, pause } = useTimer({
     initialSeconds,
     autoPauseOnBlur: true,
     onTickSeconds: undefined, // optional per-second callback

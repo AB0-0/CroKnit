@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthProvider";
-import { fetchProjectsByCategory, createProject } from "./api";
+import { fetchProjectsByCategory, createProject } from "../api";
 
 export default function ProjectList() {
   const { id: categoryId } = useParams();
@@ -31,25 +31,27 @@ export default function ProjectList() {
   }
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Projects</h2>
+    <div className="container">
+      <div className="panel">
+        <h2>Projects</h2>
 
-      <div>
-        <input
-          placeholder="Project name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <button onClick={handleCreate}>Add Project</button>
+        <div className="form-row">
+          <input
+            placeholder="Project name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <button onClick={handleCreate}>Add Project</button>
+        </div>
+
+        <ul className="list">
+          {projects.map((p) => (
+            <li key={p.id} className="list-item">
+              <a href={`#/project/${p.id}`}>{p.name}</a>
+            </li>
+          ))}
+        </ul>
       </div>
-
-      <ul>
-        {projects.map((p) => (
-          <li key={p.id}>
-            <a href={`#/project/${p.id}`}>{p.name}</a>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

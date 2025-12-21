@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useNavigate } from "react-router-dom";
 
@@ -29,10 +29,13 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h2>🧶 Welcome to Croknit</h2>
-        <p className="auth-subtitle">
-          Track your projects, stitches, and yarn with ease
-        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+          <div style={{ fontSize: 26 }}>🧶</div>
+          <div>
+            <h2 style={{ margin: 0 }}>CroKnit</h2>
+            <div style={{ fontSize: 12, color: "var(--muted)" }}>Track your projects with ease</div>
+          </div>
+        </div>
 
         <input
           placeholder="Email"

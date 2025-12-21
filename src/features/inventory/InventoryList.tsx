@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../features/auth/AuthProvider";
-import { fetchInventory, createInventoryItem } from "./api";
+import { fetchInventory, createInventoryItem } from "../api";
 
 export default function InventoryList() {
   const { user } = useAuth();
@@ -31,34 +31,37 @@ export default function InventoryList() {
   }
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Inventory</h2>
+    <div className="container">
+      <div className="panel">
+        <h2>Inventory</h2>
 
-      <select value={type} onChange={(e) => setType(e.target.value as any)}>
-        <option value="yarn">Yarn</option>
-        <option value="hook">Hook</option>
-        <option value="needle">Needle</option>
-      </select>
+        <div className="form-row">
+          <select value={type} onChange={(e) => setType(e.target.value as any)}>
+            <option value="yarn">Yarn</option>
+            <option value="hook">Hook</option>
+            <option value="needle">Needle</option>
+          </select>
 
-      <input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-      <input placeholder="Size" value={size} onChange={(e) => setSize(e.target.value)} />
-      <input
-        type="number"
-        placeholder="Remaining"
-        value={remaining}
-        onChange={(e) => setRemaining(Number(e.target.value))}
-      />
+          <input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+          <input placeholder="Size" value={size} onChange={(e) => setSize(e.target.value)} />
+          <input
+            type="number"
+            placeholder="Remaining"
+            value={remaining}
+            onChange={(e) => setRemaining(Number(e.target.value))}
+          />
 
-      <button onClick={handleAdd}>Add</button>
+          <button onClick={handleAdd}>Add</button>
+        </div>
 
-      <ul>
-        {items.map((i) => (
-          <li key={i.id}>
-            [{i.item_type}] {i.name} {i.size && `(${i.size})`}{" "}
-            {i.remaining != null && `– ${i.remaining}`}
-          </li>
-        ))}
-      </ul>
+        <ul className="list">
+          {items.map((i) => (
+            <li key={i.id} className="list-item">
+              [{i.item_type}] {i.name} {i.size && `(${i.size})`} {i.remaining != null && `– ${i.remaining}`}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

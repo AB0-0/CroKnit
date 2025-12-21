@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
-import { fetchCategories, createCategory } from "../projects/api";
+import { fetchCategories, createCategory } from "../api";
 import { useNavigate } from "react-router-dom";
 
 export default function CategoryList() {
@@ -29,23 +29,27 @@ export default function CategoryList() {
   }
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Categories</h2>
-      <div>
-        <input placeholder="category name" value={name} onChange={(e) => setName(e.target.value)} />
-        <button onClick={handleCreate}>Add</button>
-      </div>
-      <ul>
-        {categories.map((c) => (
-          <li key={c.id}>
-            <a href={`#/category/${c.id}`}>{c.name}</a>
-          </li>
-        ))}
-      </ul>
-      <hr />
-      <div>
-        <h3>Recent projects</h3>
-        <p>Open a category to see projects. (Expand this component later.)</p>
+    <div className="container">
+      <div className="panel">
+        <h2>Categories</h2>
+        <div className="form-row">
+          <input placeholder="category name" value={name} onChange={(e) => setName(e.target.value)} />
+          <button onClick={handleCreate}>Add</button>
+        </div>
+
+        <ul className="list">
+          {categories.map((c) => (
+            <li key={c.id} className="list-item">
+              <a href={`#/category/${c.id}`}>{c.name}</a>
+            </li>
+          ))}
+        </ul>
+
+        <hr />
+        <div>
+          <h3>Recent projects</h3>
+          <p>Open a category to see projects. (Expand this component later.)</p>
+        </div>
       </div>
     </div>
   );

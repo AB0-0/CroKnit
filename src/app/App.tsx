@@ -5,6 +5,8 @@ import CategoryList from "../features/categories/CategoryList";
 import ProjectList from "../features/projects/ProjectList";
 import ProjectDashboard from "../features/projects/ProjectDashboard";
 
+import NavBar from "./NavBar";
+
 export default function App() {
   const { user, loading } = useAuth();
 
@@ -14,24 +16,29 @@ export default function App() {
   }
 
   return (
-    <Routes>
-      {/* PUBLIC ROUTE */}
-      <Route path="/login" element={<Login />} />
+    <>
+      <NavBar />
+      <main className="app-main">
+        <Routes>
+          {/* PUBLIC ROUTE */}
+          <Route path="/login" element={<Login />} />
 
-      {/* PROTECTED ROUTES */}
-      {user ? (
-        <>
-          <Route path="/" element={<CategoryList />} />
-          <Route path="/category/:id" element={<ProjectList />} />
-          <Route path="/project/:id" element={<ProjectDashboard />} />
-        </>
-      ) : (
-        // If not logged in, redirect everything else to login
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      )}
+          {/* PROTECTED ROUTES */}
+          {user ? (
+            <>
+              <Route path="/" element={<CategoryList />} />
+              <Route path="/category/:id" element={<ProjectList />} />
+              <Route path="/project/:id" element={<ProjectDashboard />} />
+            </>
+          ) : (
+            // If not logged in, redirect everything else to login
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          )}
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
-    </Routes>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
+        </Routes>
+      </main>
+    </>
   );
 }
