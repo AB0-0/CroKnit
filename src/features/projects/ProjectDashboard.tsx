@@ -5,19 +5,43 @@ import RowCounter from "../counters/RowCounter";
 import StitchCounter from "../counters/StitchCounter";
 import { useTimer } from "../../hooks/userTimer";
 import ProjectInventory from "./ProjectInventory";
+import { supabase } from "../../lib/supabase";
+import { useAuth } from "../auth/AuthProvider";
+import { useToasts } from "../../app/ToastProvider";
 
 export default function ProjectDashboard() {
   const { id } = useParams();
+  const { user } = useAuth();
+  const { addToast } = useToasts();
   const [project, setProject] = useState<any | null>(null);
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
+  const [sessionStartSeconds, setSessionStartSeconds] = useState<number>(0);
 
-  // load project
+  // load project and sessions
   useEffect(() => {
     if (!id) return;
     (async () => {
       const p = await fetchProject(id);
       setProject(p);
+      await loadSessions();
     })();
   }, [id]);
+
+  async function loadSessions() {
+    if (!id || !user) return;
+    const { data, error } = await supabase
+      .from('timer_sessions')
+      .select('*')
+      .eq('project_id', id)
+      .order('started_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error loading sessions:', error);
+    } else {
+      setSessions(data ?? []);
+    }
+  }
 
   useEffect(() => {
     if (!project?.id) return;
@@ -64,11 +88,44 @@ export default function ProjectDashboard() {
   }, [project?.category_id]);
 
   const initialSeconds = project?.total_time_seconds ?? 0;
-  const { elapsed, running, start, pause } = useTimer({
+  const { elapsed, running, start: startTimer, pause: pauseTimer } = useTimer({
     initialSeconds,
-    autoPauseOnBlur: true,
+    autoPauseOnBlur: false,
     onTickSeconds: undefined,
   });
+
+  async function start() {
+    setSessionStartTime(Date.now());
+    setSessionStartSeconds(elapsed);
+    startTimer();
+  }
+
+  async function pause() {
+    pauseTimer();
+    await saveSession();
+  }
+
+  async function saveSession() {
+    if (!project?.id || !user || !sessionStartTime) return;
+    
+    const duration = Math.floor(elapsed - sessionStartSeconds);
+    if (duration < 1) return; // Don't save sessions less than 1 second
+
+    const { error } = await supabase.from('timer_sessions').insert({
+      project_id: project.id,
+      user_id: user.id,
+      started_at: new Date(sessionStartTime).toISOString(),
+      duration_seconds: duration,
+    });
+
+    if (error) {
+      console.error('Error saving session:', error);
+      addToast({ message: 'Failed to save timer session', kind: 'error' });
+    } else {
+      await loadSessions();
+      setSessionStartTime(null);
+    }
+  }
 
   useEffect(() => {
     if (!project?.id) return;
@@ -148,12 +205,32 @@ export default function ProjectDashboard() {
 
   async function handlePauseSave() {
     if (!project?.id) return;
-    pause();
+    pauseTimer();
+    await saveSession();
     const updated = await updateProjectCounters(project.id, { total_time_seconds: Math.floor(elapsed) });
     if (updated) {
       setProject((p: any) => ({ ...p, total_time_seconds: updated.total_time_seconds }));
       try { localStorage.removeItem(`project-pending-save:${project.id}`); localStorage.removeItem(`project-timer-last:${project.id}`); } catch (e) {}
     }
+  }
+
+  function formatDuration(seconds: number) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${secs}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    } else {
+      return `${secs}s`;
+    }
+  }
+
+  function formatDate(dateString: string) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
   if (!project) return <div>Loading project...</div>;
@@ -169,12 +246,36 @@ export default function ProjectDashboard() {
       <h2>{project.name} {project.tag && <span style={{ color: 'var(--accent)', fontSize: '0.9rem', marginLeft: 8 }}>{project.tag}</span>}</h2>
 
       <div className="project-timer">
-        <div className="timer-label"><strong>Timer:</strong> <span className="timer-value">{Math.floor(elapsed)}s</span></div>
+        <div className="timer-label"><strong>Total Time:</strong> <span className="timer-value">{formatDuration(Math.floor(elapsed))}</span></div>
         <div className="timer-controls" role="group" aria-label="Timer controls">
           {!running ? <button className="btn-ctrl" onClick={start}>Start</button> : <button className="btn-ctrl" onClick={pause}>Pause</button>}
           <button className="btn-ctrl" onClick={handlePauseSave}>Pause & Save</button>
         </div>
       </div>
+
+      {sessions.length > 0 && (
+        <div className="timer-sessions" style={{ marginTop: '1.5rem' }}>
+          <h3>Work Sessions</h3>
+          <div className="sessions-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sessions.map((session) => (
+                  <tr key={session.id}>
+                    <td>{formatDate(session.started_at)}</td>
+                    <td>{formatDuration(session.duration_seconds)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       <div className="counters-grid">
         <RowCounter value={project.row_count ?? 0} onChange={onRowChange} />

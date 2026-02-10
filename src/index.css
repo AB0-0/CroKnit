@@ -247,6 +247,52 @@ button.primary:hover { filter: brightness(0.98); transform: translateY(-1px) sca
 .counters-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
 @media (max-width: 560px) { .counters-grid { grid-template-columns: 1fr; } }
 
+/* Timer sessions table */
+.timer-sessions {
+  background: rgba(0, 0, 0, 0.12);
+  padding: 1.25rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.timer-sessions h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.sessions-table {
+  overflow-x: auto;
+}
+
+.sessions-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.sessions-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--accent);
+  font-weight: 600;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+}
+
+.sessions-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.sessions-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.sessions-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 .list-item { padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
 .inventory-card {
