@@ -333,8 +333,6 @@ h3, h4 { color: var(--muted); }
 .project-card-actions .btn-ctrl { padding: 0.4rem 0.55rem; }
 @media (max-width: 760px) { .projects-grid, .categories-grid { grid-template-columns: 1fr; } }
 
-.categories-grid { padding: 12px; }
-
 .form-row { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
 .form-row input, .form-row select {
   min-width: 180px;
