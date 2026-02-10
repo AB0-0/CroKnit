@@ -124,6 +124,16 @@ export default function ProjectDashboard() {
     } else {
       await loadSessions();
       setSessionStartTime(null);
+      
+      // Also update the project's total_time_seconds for backward compatibility
+      const updated = await updateProjectCounters(project.id, { total_time_seconds: Math.floor(elapsed) });
+      if (updated) {
+        setProject((p: any) => ({ ...p, total_time_seconds: updated.total_time_seconds }));
+        try { 
+          localStorage.removeItem(`project-pending-save:${project.id}`); 
+          localStorage.removeItem(`project-timer-last:${project.id}`); 
+        } catch (e) {}
+      }
     }
   }
 
@@ -203,17 +213,6 @@ export default function ProjectDashboard() {
     updateProjectCounters(project.id, { stitch_count: newStitch }).catch(console.error);
   }
 
-  async function handlePauseSave() {
-    if (!project?.id) return;
-    pauseTimer();
-    await saveSession();
-    const updated = await updateProjectCounters(project.id, { total_time_seconds: Math.floor(elapsed) });
-    if (updated) {
-      setProject((p: any) => ({ ...p, total_time_seconds: updated.total_time_seconds }));
-      try { localStorage.removeItem(`project-pending-save:${project.id}`); localStorage.removeItem(`project-timer-last:${project.id}`); } catch (e) {}
-    }
-  }
-
   function formatDuration(seconds: number) {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -233,6 +232,12 @@ export default function ProjectDashboard() {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
+  // Calculate total time from all sessions
+  const totalSessionTime = sessions.reduce((sum, session) => sum + (session.duration_seconds || 0), 0);
+  
+  // Current session time is the difference between elapsed and initial
+  const currentSessionTime = sessionStartTime ? Math.floor(elapsed - sessionStartSeconds) : 0;
+
   if (!project) return <div>Loading project...</div>;
 
   return (
@@ -245,48 +250,67 @@ export default function ProjectDashboard() {
       </div>
       <h2>{project.name} {project.tag && <span style={{ color: 'var(--accent)', fontSize: '0.9rem', marginLeft: 8 }}>{project.tag}</span>}</h2>
 
-      <div className="project-timer">
-        <div className="timer-label"><strong>Total Time:</strong> <span className="timer-value">{formatDuration(Math.floor(elapsed))}</span></div>
-        <div className="timer-controls" role="group" aria-label="Timer controls">
-          {!running ? <button className="btn-ctrl" onClick={start}>Start</button> : <button className="btn-ctrl" onClick={pause}>Pause</button>}
-          <button className="btn-ctrl" onClick={handlePauseSave}>Pause & Save</button>
-        </div>
-      </div>
+      <div className="project-layout">
+        <div className="project-details">
+          <div className="counters-grid">
+            <RowCounter value={project.row_count ?? 0} onChange={onRowChange} />
+            <StitchCounter value={project.stitch_count ?? 0} onChange={onStitchChange} />
+          </div>
 
-      {sessions.length > 0 && (
-        <div className="timer-sessions" style={{ marginTop: '1.5rem' }}>
-          <h3>Work Sessions</h3>
-          <div className="sessions-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date & Time</th>
-                  <th>Duration</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sessions.map((session) => (
-                  <tr key={session.id}>
-                    <td>{formatDate(session.started_at)}</td>
-                    <td>{formatDuration(session.duration_seconds)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={{ marginTop: 16 }}>
+            <ProjectInventory projectId={project.id} />
           </div>
         </div>
-      )}
 
-      <div className="counters-grid">
-        <RowCounter value={project.row_count ?? 0} onChange={onRowChange} />
-        <StitchCounter value={project.stitch_count ?? 0} onChange={onStitchChange} />
+        <div className="timer-sidebar">
+          <div className="timer-container">
+            <div className="project-timer">
+              <div className="timer-label">
+                <strong>Current Session:</strong> 
+                <span className="timer-value">{running ? formatDuration(currentSessionTime) : '0s'}</span>
+              </div>
+              <div className="timer-controls" role="group" aria-label="Timer controls">
+                {!running ? (
+                  <button className="btn-ctrl" onClick={start}>Start</button>
+                ) : (
+                  <button className="btn-ctrl" onClick={pause}>Pause</button>
+                )}
+              </div>
+            </div>
+
+            <div className="total-time">
+              <strong>Total Time:</strong>
+              <div className="total-time-value">{formatDuration(totalSessionTime)}</div>
+            </div>
+          </div>
+
+          <div className="timer-sessions">
+            <h3>Work Sessions</h3>
+            {sessions.length > 0 ? (
+              <div className="sessions-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date & Time</th>
+                      <th>Duration</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sessions.map((session) => (
+                      <tr key={session.id}>
+                        <td>{formatDate(session.started_at)}</td>
+                        <td>{formatDuration(session.duration_seconds)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>No sessions recorded yet</div>
+            )}
+          </div>
+        </div>
       </div>
-
-      <div style={{ marginTop: 16 }}>
-        <ProjectInventory projectId={project.id} />
-      </div>
-
-
     </div>
   );
 }
