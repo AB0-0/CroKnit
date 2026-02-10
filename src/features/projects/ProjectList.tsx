@@ -82,9 +82,17 @@ export default function ProjectList() {
 
               <div className="project-card-actions">
                 {editingId === p.id ? (
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <input value={editName} onChange={(e) => setEditName(e.target.value)} />
-                    <select value={editTag} onChange={(e) => setEditTag(e.target.value as any)}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', width: '100%' }}>
+                    <input 
+                      value={editName} 
+                      onChange={(e) => setEditName(e.target.value)} 
+                      style={{ flex: '1 1 auto', minWidth: '100px' }}
+                    />
+                    <select 
+                      value={editTag} 
+                      onChange={(e) => setEditTag(e.target.value as any)}
+                      style={{ flexShrink: 0 }}
+                    >
                       <option value="">(none)</option>
                       <option value="crochet">Crochet</option>
                       <option value="knit">Knit</option>

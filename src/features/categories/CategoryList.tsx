@@ -91,9 +91,13 @@ export default function CategoryList() {
               onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && editingId !== c.id) navigate(`/category/${c.id}`); }}
             >
               {editingId === c.id ? (
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input value={editName} onChange={(e) => setEditName(e.target.value)} />
-                  <div style={{ display: 'flex', gap: 6 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', width: '100%' }}>
+                  <input 
+                    value={editName} 
+                    onChange={(e) => setEditName(e.target.value)} 
+                    style={{ flex: '1 1 auto', minWidth: '120px' }}
+                  />
+                  <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
                     <button className="btn-ctrl" onClick={() => saveEdit(c.id)}>Save</button>
                     <button className="btn-ctrl reset" onClick={() => setEditingId(null)}>Cancel</button>
                   </div>

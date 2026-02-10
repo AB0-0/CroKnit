@@ -217,20 +217,54 @@ export default function InventoryList() {
 
         <div className="inventory-grid">
           {filteredItems.map((i) => (
-              <div key={i.id} className="inventory-card">
+              <div 
+                key={i.id} 
+                className="inventory-card"
+                style={editingId === i.id ? { flexDirection: 'column', alignItems: 'stretch' } : undefined}
+              >
                 {editingId === i.id ? (
-                  <div>
-                    <input value={editName} onChange={(e) => setEditName(e.target.value)} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+                    <input 
+                      value={editName} 
+                      onChange={(e) => setEditName(e.target.value)} 
+                      style={{ width: '100%' }}
+                    />
                     {i.item_type === 'yarn' ? (
                       <>
-                        <input value={editYarnType} onChange={(e) => setEditYarnType(e.target.value)} placeholder="Yarn type" />
-                        <input value={editColor} onChange={(e) => setEditColor(e.target.value)} placeholder="Color" />
-                        <input value={editSize} onChange={(e) => setEditSize(e.target.value)} placeholder="Size (e.g. 4mm)" />
+                        <input 
+                          value={editYarnType} 
+                          onChange={(e) => setEditYarnType(e.target.value)} 
+                          placeholder="Yarn type" 
+                          style={{ width: '100%' }}
+                        />
+                        <input 
+                          value={editColor} 
+                          onChange={(e) => setEditColor(e.target.value)} 
+                          placeholder="Color" 
+                          style={{ width: '100%' }}
+                        />
+                        <input 
+                          value={editSize} 
+                          onChange={(e) => setEditSize(e.target.value)} 
+                          placeholder="Size (e.g. 4mm)" 
+                          style={{ width: '100%' }}
+                        />
                       </>
                     ) : (
-                      <input type="number" value={editSizeMm ?? ''} onChange={(e) => setEditSizeMm(Number(e.target.value))} placeholder="Size (mm)" />
+                      <input 
+                        type="number" 
+                        value={editSizeMm ?? ''} 
+                        onChange={(e) => setEditSizeMm(Number(e.target.value))} 
+                        placeholder="Size (mm)" 
+                        style={{ width: '100%' }}
+                      />
                     )}
-                    <input type="number" value={editRemaining} onChange={(e) => setEditRemaining(Number(e.target.value))} />
+                    <input 
+                      type="number" 
+                      value={editRemaining} 
+                      onChange={(e) => setEditRemaining(Number(e.target.value))} 
+                      style={{ width: '100%' }}
+                    />
                     <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                       <button className="btn-ctrl" onClick={() => saveEdit(i.id)}>Save</button>
                       <button className="btn-ctrl reset" onClick={cancelEdit}>Cancel</button>

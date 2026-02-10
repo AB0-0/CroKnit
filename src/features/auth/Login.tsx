@@ -50,25 +50,27 @@ export default function Login() {
           onChange={(e) => setPass(e.target.value)}
         />
 
-        {mode === "login" ? (
-          <>
-            <button className="primary" onClick={signIn} disabled={busy}>
-              Sign in
-            </button>
-            <button className="secondary" onClick={() => setMode("register")}>
-              Create account
-            </button>
-          </>
-        ) : (
-          <>
-            <button className="primary" onClick={signUp} disabled={busy}>
-              Register
-            </button>
-            <button className="secondary" onClick={() => setMode("login")}>
-              Back to login
-            </button>
-          </>
-        )}
+        <div className="auth-buttons">
+          {mode === "login" ? (
+            <>
+              <button className="primary" onClick={signIn} disabled={busy}>
+                Sign in
+              </button>
+              <button className="secondary" onClick={() => setMode("register")}>
+                Create account
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="primary" onClick={signUp} disabled={busy}>
+                Register
+              </button>
+              <button className="secondary" onClick={() => setMode("login")}>
+                Back to login
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
