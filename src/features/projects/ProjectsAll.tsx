@@ -63,7 +63,6 @@ export default function ProjectsAll() {
     const { error } = await supabase.from("projects").update({ archived: true }).eq("id", p.id);
     if (error) {
       console.error(error);
-      // If the 'archived' column doesn't exist, show an actionable message to the developer
       const isMissingColumn = /column\s+"archived"\s+does\s+not\s+exist/i.test(error.message ?? "");
       if (isMissingColumn) {
         addToast({
@@ -136,7 +135,6 @@ export default function ProjectsAll() {
         label: "Undo",
         onClick: async () => {
           try {
-            // attempt to restore a minimal project
             await supabase.from("projects").insert({ user_id: user!.id, name: p.name });
             const f = await fetchAllProjects(user!.id);
             setProjects(f ?? []);
